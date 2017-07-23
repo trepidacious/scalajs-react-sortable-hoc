@@ -15,7 +15,7 @@ scalacOptions in ThisBuild ++= Seq(
   "-Xlint"
 )
 
-val scalajsReactVersion = "0.11.3"
+val scalajsReactVersion = "1.1.0"
 
 lazy val root = project.in(file(".")).
   aggregate(scalaJSReactSortableHOCJS, scalaJSReactSortableHOCJVM).

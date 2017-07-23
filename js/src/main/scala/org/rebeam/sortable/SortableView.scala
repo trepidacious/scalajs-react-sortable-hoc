@@ -1,15 +1,15 @@
 package org.rebeam.sortable
 
-import japgolly.scalajs.react.ReactComponentB
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react._
+import japgolly.scalajs.react.vdom.html_<^._
 
 object SortableView {
 
   import japgolly.scalajs.react.vdom.SvgTags._
   import japgolly.scalajs.react.vdom.SvgAttrs._
 
-  private val handleGrip = ReactComponentB[Unit]("HandleGrip")
-    .render(_ =>
+  private val handleGrip = ScalaComponent.builder[Unit]("HandleGrip")
+    .renderStatic(
       <.div(
         ^.className := "react-sortable-handle",
         svg(

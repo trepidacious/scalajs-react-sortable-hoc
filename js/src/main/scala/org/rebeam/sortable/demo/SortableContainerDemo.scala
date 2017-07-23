@@ -1,13 +1,13 @@
 package org.rebeam.sortable.demo
 
 import japgolly.scalajs.react._
-import japgolly.scalajs.react.vdom.prefix_<^._
+import japgolly.scalajs.react.vdom.html_<^._
 import org.rebeam.sortable._
 
 object SortableContainerDemo {
 
   // Equivalent of ({value}) => <li>{value}</li> in original demo
-  val itemView = ReactComponentB[String]("liView")
+  val itemView = ScalaComponent.builder[String]("liView")
     .render(d => {
       <.div(
         ^.className := "react-sortable-item",
@@ -21,11 +21,11 @@ object SortableContainerDemo {
   val sortableItem = SortableElement.wrap(itemView)
 
   // Equivalent of the `({items}) =>` lambda passed to SortableContainer in original demo
-  val listView = ReactComponentB[List[String]]("listView")
+  val listView = ScalaComponent.builder[List[String]]("listView")
     .render(d => {
       <.div(
         ^.className := "react-sortable-list",
-        d.props.zipWithIndex.map {
+        d.props.zipWithIndex.toTagMod {
           case (value, index) =>
             sortableItem(SortableElement.Props(index = index))(value)
         }
@@ -54,7 +54,7 @@ object SortableContainerDemo {
 
   val defaultItems = Range(0, 10).map("Item " + _).toList
 
-  val c = ReactComponentB[Unit]("SortableContainerDemo")
+  val c = ScalaComponent.builder[Unit]("SortableContainerDemo")
     .initialState(defaultItems)
     .backend(new Backend(_))
     .render(s => s.backend.render(s.props, s.state))
