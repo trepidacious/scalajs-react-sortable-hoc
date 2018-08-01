@@ -43,7 +43,7 @@ object SortableContainerDemo {
         SortableContainer.Props(
           onSortEnd = p =>
             scope.modState(
-              l => p.updatedList(l)
+              l => p.updated(l).toList
             ),
           useDragHandle = true,
           helperClass = "react-sortable-handler"

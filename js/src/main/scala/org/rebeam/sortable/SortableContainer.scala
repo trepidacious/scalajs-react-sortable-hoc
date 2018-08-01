@@ -1,12 +1,19 @@
 package org.rebeam.sortable
 
-import japgolly.scalajs.react.raw.ReactElement
-import japgolly.scalajs.react.{Callback, Children, GenericComponent, JsComponent, _}
+import japgolly.scalajs.react._
 
 import scala.scalajs.js
+import scala.scalajs.js.annotation.JSImport
+
 import scala.language.higherKinds
 
 object SortableContainer {
+
+  @js.native
+  @JSImport("react-sortable-hoc", "SortableContainer", "Sortable.SortableContainer")
+  private object SortableContainerFacade extends js.Object {
+    def apply(wrapped: js.Any): js.Any = js.native
+  }
 
   @js.native
   protected trait Permutation extends js.Object {
@@ -35,6 +42,7 @@ object SortableContainer {
     val onSortEnd: js.Function1[Permutation, Unit] = js.native
     //onSortStart <- undef or function({node, index, collection}, event)
     //onSortMove <- undef or function(event)
+    var key: js.UndefOr[Key] = js.native
   }
 
   object Props {
@@ -53,15 +61,16 @@ object SortableContainer {
               //getContainer <- undef or function returning scrollable container element, function(wrappedInstance: React element): DOM element.
               //getHelperDimensions <- undef or function({node, index, collection})
               //Note this function actually gets "{oldIndex, newIndex, collection}, e", but we don't have much use for the other arguments
-              onSortEnd: IndexChange => Callback = _ => Callback.empty
+              onSortEnd: IndexChange => Callback = _ => Callback.empty,
               //onSortStart <- undef or function({node, index, collection}, event)
               //onSortMove <- undef or function(event)
+              key: js.UndefOr[Key] = js.undefined
              ): Props =
       js.Dynamic.literal(
         axis = axis, lockAxis = lockAxis, helperClass = helperClass, transitionDuration = transitionDuration, pressDelay = pressDelay,
         distance = distance, useDragHandle = useDragHandle, useWindowAsScrollContainer = useWindowAsScrollContainer,
         hideSortableGhost = hideSortableGhost, lockToContainerEdges = lockToContainerEdges,
-        onSortEnd = js.defined { p: Permutation => onSortEnd(IndexChange(p.oldIndex, p.newIndex)).runNow() }
+        onSortEnd = js.defined { p: Permutation => onSortEnd(IndexChange(p.oldIndex, p.newIndex)).runNow() }, key = key.asInstanceOf[js.Any]
       ).asInstanceOf[Props]
   }
 
@@ -73,10 +82,10 @@ object SortableContainer {
     * @return A component wrapping the wrapped component...
     */
   def wrap[P, CT[_, _]](wrappedComponent: GenericComponent[P, CT, _]): Props => P => JsComponent.Unmounted[js.Object, Null] = {
-    (props) =>
-      (wrappedProps) => {
-        val reactElement = js.Dynamic.global.Sortable.SortableContainer(wrappedComponent.raw).asInstanceOf[ReactElement]
-        val component = JsComponent[js.Object, Children.None, Null](reactElement)
+    val reactElement = SortableContainerFacade(wrappedComponent.raw)
+    val component = JsComponent[js.Object, Children.None, Null](reactElement)
+    props =>
+      wrappedProps => {
         val mergedProps = js.Dynamic.literal()
         mergedProps.updateDynamic("axis")(props.axis)
         mergedProps.updateDynamic("lockAxis")(props.lockAxis)
@@ -89,10 +98,12 @@ object SortableContainer {
         mergedProps.updateDynamic("hideSortableGhost")(props.hideSortableGhost)
         mergedProps.updateDynamic("lockToContainerEdges")(props.lockToContainerEdges)
         mergedProps.updateDynamic("onSortEnd")(props.onSortEnd)
+        mergedProps.updateDynamic("key")(props.key.asInstanceOf[js.Any])
         mergedProps.updateDynamic("a")(wrappedProps.asInstanceOf[js.Any])
         component(mergedProps.asInstanceOf[js.Object])
       }
   }
+
 }
 
 
