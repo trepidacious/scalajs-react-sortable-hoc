@@ -1,10 +1,14 @@
-name := "scalajs-react-sortable-hoc root project"
+import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-version in ThisBuild := "0.1-SNAPSHOT"
+name := "scalajs-react-sortable-hoc root"
+
+version in ThisBuild := "0.0.2"
 
 organization in ThisBuild := "org.rebeam"
 
-scalaVersion in ThisBuild := "2.11.8"
+scalaVersion in ThisBuild := "2.12.6"
+
+crossScalaVersions in ThisBuild := Seq("2.11.12", "2.12.6")
 
 scalacOptions in ThisBuild ++= Seq(
   "-feature",
@@ -15,7 +19,7 @@ scalacOptions in ThisBuild ++= Seq(
   "-Xlint"
 )
 
-val scalajsReactVersion = "0.11.3"
+val scalajsReactVersion = "1.2.3"
 
 lazy val root = project.in(file(".")).
   aggregate(scalaJSReactSortableHOCJS, scalaJSReactSortableHOCJVM).
@@ -24,22 +28,14 @@ lazy val root = project.in(file(".")).
     publishLocal := {}
   )
 
-lazy val scalaJSReactSortableHOC = crossProject.in(file(".")).
+lazy val scalaJSReactSortableHOC = crossProject(JSPlatform, JVMPlatform).in(file(".")).
 
   //Settings for all projects
   settings(
-    name := "tree-material-ui",
-    version := "0.1-SNAPSHOT",
-    libraryDependencies ++= Seq()
-
-  //Settings specific to JVM
-  ).jvmSettings(
-    libraryDependencies ++= Seq()
-
-  //Settings specific to JS
+    name := "scalajs-react-sortable-hoc"
   ).jsSettings(
     //Scalajs dependencies that are used on the client only
-    libraryDependencies ++= Seq(      
+    libraryDependencies ++= Seq(
     	"com.github.japgolly.scalajs-react" %%% "core" % scalajsReactVersion,
       "com.github.japgolly.scalajs-react" %%% "extra" % scalajsReactVersion
 		)
